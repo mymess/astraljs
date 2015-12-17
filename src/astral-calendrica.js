@@ -218,3 +218,41 @@ aa.gregorian_from_fixed = gregorian_from_fixed;
 function gregorian_date_difference(g_date1, g_date2) {
   return fixed_from_gregorian(g_date2) - fixed_from_gregorian(g_date1);
 }
+
+// make sure month and year are integers and day is float
+function date2Julian(inMonth, inDay, inYear)
+{
+        var             A,B;
+        var             theMonth = inMonth;
+        var             theYear = inYear;
+  
+        if ( inMonth <= 2 )
+                { --theYear;  theMonth += 12;  }
+   
+        A = Math.floor(theYear/100.0);
+  
+        if ( inYear < 1582 )
+                B = 0;
+        else if (inYear > 1582 )
+                B = 2 - A + Math.floor(A/4.0);
+        else
+    {
+                if ( inMonth < 10 )
+                        B = 0;
+                else if ( inMonth > 10 )
+                        B = 2 - A + Math.floor(A/4.0);
+                else
+                {
+                        if ( inDay < 5 )
+                                B = 0;
+                        else if ( inDay >= 15 )
+                                B = 2 - A + Math.floor(A/4.0);
+                        else
+                                { return -1; } /* error, days falls on 10/5/1582 - 10/14/1582 */
+                } /* end middle else */   
+        } /* end outer else */
+
+        /* Julian Day */
+        return Math.floor(365.25 * (theYear + 4716.0)) + Math.floor(30.6001 * (theMonth + 1.0)) + inDay + B - 1524.5;
+}
+aa.date2Julian = date2Julian;
